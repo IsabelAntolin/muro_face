@@ -1,4 +1,4 @@
-const pool = require('./pool.js')
+const pool = require('./conexion.js')
 
 async function create_table () {
   // 1. Solicito un 'cliente' al pool de conexiones
@@ -21,17 +21,23 @@ async function create_table () {
 }
 create_table()
 
-async function crear_comentario( usuario_id, mensaje_id, comentario){
+async function crear_comentario( mensaje_id, usuario_id,comentario){
   const client = await pool.connect()
-
   // 2. Ejecuto la consulta SQL (me traigo un array de arrays)
   await client.query(
-    `insert into comentarios(usuario_id, mensaje_id, comentario) values ($1, $2, $3)`,
-    [usuario_id, mensaje_id, comentario]
-  )
-
+    `insert into comentarios(mensaje_id,usuario_id,comentario) values ($1, $2, $3)`,
+    [mensaje_id,usuario_id, comentario]  )
   // 3. Devuelvo el cliente al pool
   client.release()
 }
+const mostrarComentarios = async()=>{
+ const client = await pool.connect()
+ const resp = await client.query({
+  text:`select comentarios.id ,(firstname || ' ' || lastname) AS name,comentario,comentarios.fecha_creacion,mensaje_id from comentarios inner join usuarios on usuario_id=usuarios.id inner join mensajes on mensajes.id=mensaje_id order by comentarios.fecha_creacion;`
+ })
 
-module.exports = {crear_comentario}
+ client.release()
+ return resp.rows
+}
+
+module.exports = {mostrarComentarios, crear_comentario}

@@ -1,4 +1,4 @@
-const pool = require('./pool.js')
+const pool = require('./conexion.js')
 
 async function create_table () {
   // 1. Solicito un 'cliente' al pool de conexiones
@@ -33,4 +33,15 @@ async function crear_mensaje( usuario_id, mensaje){
   client.release()
 }
 
-module.exports = {crear_mensaje}
+const mostrarMensajes = async()=>{
+  const client = await pool.connect()
+  const resp = await client.query({
+    text:`select mensajes.id ,(firstname || ' ' || lastname) AS name,mensaje,fecha_creacion from mensajes inner join usuarios on usuario_id=usuarios.id;`,
+    //rowMode:'array'
+    
+  })
+  client.release()
+  return resp.rows
+}
+
+module.exports = {mostrarMensajes, crear_mensaje}

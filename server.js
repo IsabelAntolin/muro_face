@@ -33,7 +33,7 @@ app.use(require('./routes/routes'))
 
 
 app.listen(3000, () => {
-  console.log('servidor ejecutando en el puerto 3000');
+  console.log('servidor ejecutando en el puerto localhost:3000/login');
 })
 
 
