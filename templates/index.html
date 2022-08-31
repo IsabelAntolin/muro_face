@@ -2,54 +2,75 @@
 {% from 'macros.html' import navbar %}
 
 {% block main %}
-{{ navbar('/', obj) }}
-<h2 class="text-center">Hola {{ obj.user.name }}</h2>
-<div class="container">
-  <div class="row">
-    <h3>Post a message</h3>
-    <form action="/crearMensaje" method="post">
-      <div class="form-floating mt-2">
-        <textarea class="form-control" name="mensaje" placeholder="Leave a comment here"
-          id="floatingTextarea"></textarea>
-      </div>
-      <div class="text-end  mt-4">
-        <button type="submit" class="btn btn-info">Post a message</button>
-      </div>
-    </form>
+{{ navbar('/', user) }}
+<!-- <h2 class="text-center">Hola {{ user.name }}</h2> -->
+<div class="container mt-5" id="container_index">
+  <div class="row border rounded mb-5 bg-white" id="mensaje">
+    <h5 class="text-center mt-2"> {{ user.name }} </h5>
+    <div class="col-1 avatar text-end mt-1">
+      <img class="rounded-circle border border-2 p-1 border-dark" src="img/avatar1.png" alt="">
+    </div>
+    <div class="col-11 ">
+      <!-- <h3 class="text-capitalize fs-5">{{ user.name }}</h3> -->
+      <form action="/crearMensaje" method="post" class="">
+        <div class="form-floating mt-2">
+          <textarea class="form-control p-0 fs-5  bg-light" style="height:1.5rem ;" name="mensaje"
+            id="floatingTextarea">
+            </textarea>
+        </div>
+        <hr>
+        <div class="text-end  ">
+          <button type="submit" class="btn" id="btn_post">Post a message</button>
+        </div>
+      </form>
+    </div>
   </div>
   <!-- ______________________________________________________________________________________________________ -->
   {% for mens in obj.mensajes%}
-  <div class="container_mensaje">
+  <div class="container_mensaje border rounded mb-4 p-4 bg-white">
     <input type="hidden" name="id_mensaje" value="{{ mens.id}}">
-    <h4><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-      <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-      <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-    </svg> {{mens.name}} {{mens.fecha_creacion}}</h4>
-    <!--datos nombre-->
+    <h4 class="text-capitalize fs-5 fw-semibold"><img class="rounded-circle border border-2 p-1 border-dark"
+        src="/img/avatar2.png" alt=""> {{mens.name}} <span class="fs-6">{{mens.fecha_creacion}}</span></h4>
     <div class="row">
-      <!--mensaje-->
       <div class="col-12">
-        <p>{{mens.mensaje}}</p>
+        <p class="fs-4  fw-semibold">{{mens.mensaje}}</p>
+        <div class="row border-bottom border-top">
+          <div class="col-6">
+            <button class="btn w-100">
+              <img src="/img/like.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
+              <span>Me Gusta</span>
+            </button>
+          </div>
+          <div class="col-6">
+            <button class="btn w-100" id="btn_comentar" onclick="activarFormulario('{{ mens.id}}')">
+              <img src="/img/comentario.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
+              <span>Comentar</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="row">
+
+    <div class="row mt-3">
       <div class="col-10 offset-1">
         {% for comen in obj.comentarios%}
-            {%if comen.mensaje_id ==  mens.id%}
-            <div class="container_comentario">
-              <h4>{{comen.name}} {{comen.fecha_creacion}}</h4>              
-              <div class="row">               
+            {%if comen.mensaje_id == mens.id%}
+            <div class="container_comentario border rounded-pill mb-2">
+              <p class="fw-semibold mt-2  mb-0 ms-4  p-0 text-capitalize fs-6">{{comen.name}}
+                <span>{{comen.fecha_creacion}}</span>
+              </p>
+              <div class="row ms-4">
                 <div class="col-12">
                   <p>{{comen.comentario}}</p>
                 </div>
               </div>
             </div>
-            {%endif%}           
+            {%endif%}
         {%endfor%}
-        <h5>Post o Comment</h5>
-        <form action="/crearComentario/{{ mens.id}}" method="post">
+        <form action="/crearComentario/{{ mens.id}}" method="post" hidden id="form_com">
+          <!-- <h5>Post o Comment</h5> -->
           <div class="form-floating mt-2">
-            <textarea class="form-control" name="comentario"  id=" floatingTextarea"></textarea>
+            <textarea class="form-control" name="comentario" id=" floatingTextarea"></textarea>
           </div>
           <div class="text-end  mt-4">
             <button type="submit" class="btn btn-info">Post a message</button>
@@ -60,4 +81,27 @@
   </div>
   {%endfor%}
 </div>
+<script>
+  // let btn_comentar = document.querySelector('#btn_comentar')
+  // btn_comentar.addEventListener('click',(id)=>{
+
+  //   const form_comentario = document.getElementById('form_com')
+  //   form_comentario.removeAttribute('hidden','false')
+  // })
+
+  function activarFormulario(id) {
+    let idd = parseInt(id)
+    let form_comentario = document.querySelectorAll('#form_com')   
+   
+    for (let algo of form_comentario) {
+      algo.removeAttribute('hidden',false)
+    }
+
+
+
+
+
+  }
+
+</script>
 {% endblock %}

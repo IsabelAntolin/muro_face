@@ -1,3 +1,22 @@
 .auth-text {
   color: antiquewhite;
 }
+/* ________________Index__________________________________ */
+body{
+  background-color: rgb(230, 230, 221);
+}
+#btn_post{
+  background-color: rgba(82, 76, 69, 0.322);
+  margin-bottom: 1rem;
+}
+#container_index {
+  width: 50%;
+}
+
+#mensaje {
+  background-color: rgba(238, 228, 230, 0.87);
+}
+
+img {
+  width: 50px;
+}

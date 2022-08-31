@@ -91,7 +91,7 @@ router.post('/register', async (req, res) => {
   }
 
   // 5. y redirigimos a la ruta principal
-  res.redirect('/')
+  res.redirect('/login')
 })
 
 module.exports = router;

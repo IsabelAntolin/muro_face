@@ -36,7 +36,7 @@ async function crear_mensaje( usuario_id, mensaje){
 const mostrarMensajes = async()=>{
   const client = await pool.connect()
   const resp = await client.query({
-    text:`select mensajes.id ,(firstname || ' ' || lastname) AS name,mensaje,fecha_creacion from mensajes inner join usuarios on usuario_id=usuarios.id;`,
+    text:`select mensajes.id ,(firstname || ' ' || lastname) AS name,mensaje,fecha_creacion from mensajes inner join usuarios on usuario_id=usuarios.id order by fecha_creacion desc;`,
     //rowMode:'array'
     
   })
