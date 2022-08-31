@@ -12,11 +12,15 @@ body{
 #container_index {
   width: 50%;
 }
-
+/* 
 #mensaje {
   background-color: rgba(238, 228, 230, 0.87);
-}
+} */
 
 img {
-  width: 50px;
+  width: 3.1rem;
+}
+
+#btn_post{
+  background-color: transparent;
 }

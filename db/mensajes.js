@@ -10,7 +10,8 @@ async function create_table () {
       usuario_id int not null references usuarios(id),
       mensaje text not null,
       fecha_creacion timestamp default now(),
-      fecha_actualizacion timestamp default now()
+      fecha_actualizacion timestamp default now(),
+      contador_like int  not null default 0
     )
   `)
 
@@ -36,7 +37,7 @@ async function crear_mensaje( usuario_id, mensaje){
 const mostrarMensajes = async()=>{
   const client = await pool.connect()
   const resp = await client.query({
-    text:`select mensajes.id ,(firstname || ' ' || lastname) AS name,mensaje,fecha_creacion from mensajes inner join usuarios on usuario_id=usuarios.id order by fecha_creacion desc;`,
+    text:`select mensajes.id ,(firstname || ' ' || lastname) AS name,mensaje,fecha_creacion,contador_like from mensajes inner join usuarios on usuario_id=usuarios.id order by fecha_creacion desc;`,
     //rowMode:'array'
     
   })
@@ -44,4 +45,20 @@ const mostrarMensajes = async()=>{
   return resp.rows
 }
 
-module.exports = {mostrarMensajes, crear_mensaje}
+const updateLike = async(id)=>{
+  const client = await pool.connect()
+  const resp = await client.query({
+    text:`select * from mensajes where id=$1`,
+    values:[id]
+  })
+  let likes = resp.rows[0].contador_like
+  likes ++
+  
+  await client.query({
+    text:`update mensajes set contador_like=${likes} where id=${id}`
+  })
+  
+  console.log(likes);
+}
+
+module.exports = {updateLike,mostrarMensajes, crear_mensaje}

@@ -5,42 +5,74 @@
 {{ navbar('/', user) }}
 <!-- <h2 class="text-center">Hola {{ user.name }}</h2> -->
 <div class="container mt-5" id="container_index">
-  <div class="row border rounded mb-5 bg-white" id="mensaje">
-    <h5 class="text-center mt-2"> {{ user.name }} </h5>
-    <div class="col-1 avatar text-end mt-1">
-      <img class="rounded-circle border border-2 p-1 border-dark" src="img/avatar1.png" alt="">
+  <div class="row border rounded mb-5 bg-white pe-5" id="mensaje">
+    <!-- _________________________avatar con el nombre___________________________________________________________ -->
+    <div class="row mt-4">
+      <div class="col-6 avatar text-end">
+        <img class="rounded-circle border border-2 p-1 border-dark" src="img/avatar1.png" alt="">
+      </div>
+      <div class="col-6 m-0 p-0">
+        <h5 class="mt-2 "> {{ user.name }} </h5>
+      </div>
     </div>
-    <div class="col-11 ">
-      <!-- <h3 class="text-capitalize fs-5">{{ user.name }}</h3> -->
-      <form action="/crearMensaje" method="post" class="">
-        <div class="form-floating mt-2">
-          <textarea class="form-control p-0 fs-5  bg-light" style="height:1.5rem ;" name="mensaje"
-            id="floatingTextarea">
-            </textarea>
-        </div>
-        <hr>
-        <div class="text-end  ">
-          <button type="submit" class="btn" id="btn_post">Post a message</button>
-        </div>
-      </form>
+    <!-- ____________________________botones __________________________________________________________ -->
+    <div class="row border-bottom border-top py-1 my-3 ">
+      <div class="col-6">
+        <button type="" class="btn border-0 w-100 m-0" id="btn_post" onclick="mostrar(1)">
+          <img src="/img/foto.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
+          <span>Foto</span>
+        </button>
+      </div>
+      <div class="col-6">
+        <button class="btn border-0 w-100 m-0" id="btn_post" onclick="mostrar(2)">
+          <img src="/img/comentario.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
+          <span>Publicar</span>
+        </button>
+      </div>
     </div>
+    <!-- _____________________________________________________________________________ -->
+    <div class="row">
+      <div class="col-8 offset-3">
+        <form action="/crearMensaje" method="post" >
+          <div class="form-floating mt-2" hidden>
+            <textarea class="form-control p-0 fs-5"  style="height:5rem;" name="mensaje" 
+              id="floatingTextarea"> </textarea>
+          </div>
+          <div class="subir_imagen" hidden>
+            <input type="file"  required  class="form-control mb-3" name="image">
+          </div>
+          <button type="submit" class="btn border-0 w-100 m-0" id="btnPublicar" hidden>
+            <img  src="/img/subir.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
+            <span>Subir</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
   </div>
   <!-- ______________________________________________________________________________________________________ -->
   {% for mens in obj.mensajes%}
   <div class="container_mensaje border rounded mb-4 p-4 bg-white">
     <input type="hidden" name="id_mensaje" value="{{ mens.id}}">
-    <h4 class="text-capitalize fs-5 fw-semibold"><img class="rounded-circle border border-2 p-1 border-dark"
-        src="/img/avatar2.png" alt=""> {{mens.name}} <span class="fs-6">{{mens.fecha_creacion}}</span></h4>
+    <h4 class="text-capitalize fs-5 fw-semibold">
+      <img class="rounded-circle border border-2 p-1 border-dark" src="/img/avatar2.png" alt=""> {{mens.name}} <span
+        class="fs-6">{{mens.fecha_creacion}}</span>
+    </h4>
     <div class="row">
       <div class="col-12">
         <p class="fs-4  fw-semibold">{{mens.mensaje}}</p>
         <div class="row border-bottom border-top">
+          <!-- _________________________________btn me gusta_____________________________           -->
           <div class="col-6">
-            <button class="btn w-100">
+            <a href="#" class="btn w-100" id="{{mens.id}}" onclick="add_like(event, {{mens.id}})">
+              <span data-id="{{ mens.id}}">{{mens.contador_like}}</span>
               <img src="/img/like.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
               <span>Me Gusta</span>
-            </button>
+            </a>
+            <!-- <button class="btn w-100">
+            </button> -->
           </div>
+          <!-- ______________________________________________________-->
           <div class="col-6">
             <button class="btn w-100" id="btn_comentar" onclick="activarFormulario('{{ mens.id}}')">
               <img src="/img/comentario.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
@@ -54,20 +86,20 @@
     <div class="row mt-3">
       <div class="col-10 offset-1">
         {% for comen in obj.comentarios%}
-            {%if comen.mensaje_id == mens.id%}
-            <div class="container_comentario border rounded-pill mb-2">
-              <p class="fw-semibold mt-2  mb-0 ms-4  p-0 text-capitalize fs-6">{{comen.name}}
-                <span>{{comen.fecha_creacion}}</span>
-              </p>
-              <div class="row ms-4">
-                <div class="col-12">
-                  <p>{{comen.comentario}}</p>
-                </div>
-              </div>
+        {%if comen.mensaje_id == mens.id%}
+        <div class="container_comentario border rounded-pill mb-2">
+          <p class="fw-semibold mt-2  mb-0 ms-4  p-0 text-capitalize fs-6">{{comen.name}}
+            <span>{{comen.fecha_creacion}}</span>
+          </p>
+          <div class="row ms-4">
+            <div class="col-12">
+              <p>{{comen.comentario}}</p>
             </div>
-            {%endif%}
+          </div>
+        </div>
+        {%endif%}
         {%endfor%}
-        <form action="/crearComentario/{{ mens.id}}" method="post" hidden id="form_com">
+        <form action="/crearComentario/{{ mens.id}}" method="post" hidden id="form_{{ mens.id }}">
           <!-- <h5>Post o Comment</h5> -->
           <div class="form-floating mt-2">
             <textarea class="form-control" name="comentario" id=" floatingTextarea"></textarea>
@@ -82,26 +114,43 @@
   {%endfor%}
 </div>
 <script>
-  // let btn_comentar = document.querySelector('#btn_comentar')
-  // btn_comentar.addEventListener('click',(id)=>{
-
-  //   const form_comentario = document.getElementById('form_com')
-  //   form_comentario.removeAttribute('hidden','false')
-  // })
 
   function activarFormulario(id) {
-    let idd = parseInt(id)
-    let form_comentario = document.querySelectorAll('#form_com')   
-   
-    for (let algo of form_comentario) {
-      algo.removeAttribute('hidden',false)
+    let form_comentario = document.querySelector('#form_' + id)
+    form_comentario.removeAttribute('hidden', false)
+  }
+  function mostrar(opcion){
+    let subirImagen = document.querySelector('.subir_imagen')
+    let publicar = document.getElementById('btnPublicar')
+    let subirPublicacion = document.querySelector('.form-floating')
+    
+    if(opcion==1){       
+       subirImagen.removeAttribute('hidden',false)
+       publicar.removeAttribute('hidden',false)
+
+       subirPublicacion.setAttribute('hidden',true)
     }
+    else{         
+       subirPublicacion.removeAttribute('hidden',false)
+       publicar.removeAttribute('hidden',false)
+
+       subirImagen.setAttribute('hidden',true)
+    }
+  }
 
 
-
-
+  async function add_like(ev, id) {
+    ev.preventDefault()
+    await fetch(`/like/${id}`)
+    const span_mensaje = document.querySelector(`span[data-id="${id}"]`)
+    let num_likes = parseInt(span_mensaje.innerHTML)
+    num_likes++;
+    span_mensaje.innerHTML = num_likes
 
   }
+
+
+  //document.querySelectorAll('button.activar').map(button => button.addEventListener('click', activarFormulario))
 
 </script>
 {% endblock %}

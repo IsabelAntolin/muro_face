@@ -5,6 +5,7 @@ const path = require('path')
 const flash = require('connect-flash')
 const pool = require('./db/conexion.js')
 const pgSession = require('connect-pg-simple')(session)
+const fileUpload = require('express-fileupload')
 
 const app = express()
 
@@ -16,6 +17,12 @@ app.use(session({
   secret: 'hmit',
   resave: false,
   cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }
+}))
+
+app.use(fileUpload({
+  limits: { fileSize: 5242880 },
+  abortOnLimit: true,
+  responseOnLimit: 'El peso del archivo no puede superar los 5 Mb (abusador!)'
 }))
 
 

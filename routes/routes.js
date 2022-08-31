@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const router = Router()
-const { crear_mensaje, mostrarMensajes } = require('../db/mensajes.js')
+const { crear_mensaje, mostrarMensajes, updateLike } = require('../db/mensajes.js')
 const { crear_comentario, mostrarComentarios } = require('../db/comentarios.js')
 const moment = require('moment')
 
@@ -56,9 +56,13 @@ router.get('/', protected_route, async (req, res) => {
 router.post('/crearMensaje', protected_route, async (req, res) => {
   const mensaje = req.body.mensaje
   const usuario_id = req.session.user.id
+  const img = req.body.image
+  // const imagen = req.files.image
+  await img.mv(`public/uploaded/${img}`)
 
+  console.log(img);
   //agregar a la base
-  await crear_mensaje(usuario_id, mensaje)
+  //await crear_mensaje(usuario_id, mensaje)
 
   res.redirect('/')
 })
@@ -70,6 +74,14 @@ router.post('/crearComentario/:id', protected_route, async (req, res) => {
   await crear_comentario(mensaje_id, usuario_id, comentario)
   res.redirect('/')
 })
+
+router.get('/like/:id',protected_route,async (req,res)=>{
+  const id = req.params.id
+  await updateLike(id)
+  console.log('bgfdsa', id);
+  res.json({})
+})
+
 router.get('*', (req, res) => {
   res.render('404.html')
 })
