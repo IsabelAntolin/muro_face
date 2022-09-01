@@ -2,6 +2,7 @@ const { Router } = require('express')
 const router = Router()
 const { crear_mensaje, mostrarMensajes, updateLike } = require('../db/mensajes.js')
 const { crear_comentario, mostrarComentarios } = require('../db/comentarios.js')
+
 const moment = require('moment')
 
 // ____________________________proteger tus rutas______________________________________________________ 
@@ -31,6 +32,7 @@ router.get('/', protected_route, async (req, res) => {
   let mensajes = await mostrarMensajes()
   let comentarios = await mostrarComentarios()
 
+
   mensajes = mensajes.map(m => {
     m.fecha_creacion = formatDate(m.fecha_creacion)
     return m
@@ -41,9 +43,15 @@ router.get('/', protected_route, async (req, res) => {
     return c
   })
 
-  // const user = req.session.user
+   let extension = mensajes.map(msj_extension =>{
+    if(msj_extension.es_imagen == true){  
+      const extension = msj_extension.mensaje.split('.')[1]
+       msj_extension.extension = extension
+    }
+    return msj_extension
+  })
+
   const obj = {
-    // user,
     mensajes,
     comentarios
   }
@@ -56,16 +64,23 @@ router.get('/', protected_route, async (req, res) => {
 router.post('/crearMensaje', protected_route, async (req, res) => {
   const mensaje = req.body.mensaje
   const usuario_id = req.session.user.id
-  const img = req.body.image
-  // const imagen = req.files.image
-  await img.mv(`public/uploaded/${img}`)
 
-  console.log(img);
-  //agregar a la base
-  //await crear_mensaje(usuario_id, mensaje)
+  await crear_mensaje(usuario_id, mensaje,false)
 
   res.redirect('/')
 })
+
+router.post('/crearImg', protected_route, async (req, res) => {
+  const usuario_id = req.session.user.id
+  const imagen = req.files.image
+  const nombreImagen = imagen.name
+
+  await imagen.mv(`public/uploaded/${nombreImagen}`)
+  //agregar a la base
+  await crear_mensaje(usuario_id, nombreImagen,true)
+  res.redirect('/')
+})
+
 router.post('/crearComentario/:id', protected_route, async (req, res) => {
   const comentario = req.body.comentario
   const mensaje_id = req.params.id
@@ -78,7 +93,7 @@ router.post('/crearComentario/:id', protected_route, async (req, res) => {
 router.get('/like/:id',protected_route,async (req,res)=>{
   const id = req.params.id
   await updateLike(id)
-  console.log('bgfdsa', id);
+  //console.log('bgfdsa', id);
   res.json({})
 })
 

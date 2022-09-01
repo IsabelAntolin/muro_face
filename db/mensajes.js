@@ -11,7 +11,8 @@ async function create_table () {
       mensaje text not null,
       fecha_creacion timestamp default now(),
       fecha_actualizacion timestamp default now(),
-      contador_like int  not null default 0
+      contador_like int  not null default 0,
+      es_imagen boolean not null default false
     )
   `)
 
@@ -21,13 +22,13 @@ async function create_table () {
 create_table()
 
 
-async function crear_mensaje( usuario_id, mensaje){
+async function crear_mensaje( usuario_id, mensaje,estado){
   const client = await pool.connect()
 
   // 2. Ejecuto la consulta SQL (me traigo un array de arrays)
   await client.query(
-    `insert into mensajes (usuario_id, mensaje) values ($1, $2)`,
-    [usuario_id, mensaje]
+    `insert into mensajes (usuario_id, mensaje,es_imagen) values ($1, $2,$3)`,
+    [usuario_id, mensaje,estado]
   )
 
   // 3. Devuelvo el cliente al pool
@@ -37,7 +38,7 @@ async function crear_mensaje( usuario_id, mensaje){
 const mostrarMensajes = async()=>{
   const client = await pool.connect()
   const resp = await client.query({
-    text:`select mensajes.id ,(firstname || ' ' || lastname) AS name,mensaje,fecha_creacion,contador_like from mensajes inner join usuarios on usuario_id=usuarios.id order by fecha_creacion desc;`,
+    text:`select mensajes.id ,(firstname || ' ' || lastname) AS name,mensaje,fecha_creacion,contador_like,es_imagen from mensajes inner join usuarios on usuario_id=usuarios.id order by fecha_creacion desc;`,
     //rowMode:'array'
     
   })

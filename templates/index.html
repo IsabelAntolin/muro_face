@@ -32,25 +32,32 @@
     </div>
     <!-- _____________________________________________________________________________ -->
     <div class="row">
-      <div class="col-8 offset-3">
-        <form action="/crearMensaje" method="post" >
-          <div class="form-floating mt-2" hidden>
-            <textarea class="form-control p-0 fs-5"  style="height:5rem;" name="mensaje" 
-              id="floatingTextarea"> </textarea>
+      <div class="col-8 offset-3 divPost" hidden>
+        <form action="/crearMensaje" method="post">
+          <div class="form-floating mt-2">
+            <textarea class="form-control p-0 fs-5" style="height:5rem;" name="mensaje" id="floatingTextarea" required ></textarea>
           </div>
-          <div class="subir_imagen" hidden>
-            <input type="file"  required  class="form-control mb-3" name="image">
+          <button type="submit" class="btn border-0 w-100 m-0" id="btnSubir">
+            <img src="/img/subir.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
+            <span>Subir</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="col-8 offset-3 divImg" hidden>
+        <form action="/crearImg" method="post" enctype="multipart/form-data">
+          <div class="subir_imagen">
+            <input type="file" required class="form-control mb-3" name="image">
           </div>
-          <button type="submit" class="btn border-0 w-100 m-0" id="btnPublicar" hidden>
-            <img  src="/img/subir.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
+          <button type="submit" class="btn border-0 w-100 m-0" id="btn_subir">
+            <img src="/img/subir.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
             <span>Subir</span>
           </button>
         </form>
       </div>
     </div>
-
   </div>
-  <!-- ______________________________________________________________________________________________________ -->
+  <!-- _____________________Ingreso de mensajes ____________________________________________________________ -->
   {% for mens in obj.mensajes%}
   <div class="container_mensaje border rounded mb-4 p-4 bg-white">
     <input type="hidden" name="id_mensaje" value="{{ mens.id}}">
@@ -60,7 +67,15 @@
     </h4>
     <div class="row">
       <div class="col-12">
-        <p class="fs-4  fw-semibold">{{mens.mensaje}}</p>
+        <!-- mens.mensaje tiene .png jpg etc -->
+        {%if (mens.extension == 'jpg') or (mens.extension == 'png') or (mens.extension == 'jpeg')%}
+        <div class="text-center">
+          <img src="/uploaded/{{mens.mensaje}}" alt="" class="w-75 pb-3">
+        </div>
+        {% else %}  
+          <p class="fs-4  fw-semibold">{{mens.mensaje}} </p>
+        {%endif%}      
+ 
         <div class="row border-bottom border-top">
           <!-- _________________________________btn me gusta_____________________________           -->
           <div class="col-6">
@@ -69,8 +84,6 @@
               <img src="/img/like.png" alt="" class="py-2 ms-3 me-2" style="width: 25px;">
               <span>Me Gusta</span>
             </a>
-            <!-- <button class="btn w-100">
-            </button> -->
           </div>
           <!-- ______________________________________________________-->
           <div class="col-6">
@@ -82,7 +95,7 @@
         </div>
       </div>
     </div>
-
+    <!-- ________________Ingreso de comentarios en mensajes______________________________________-->
     <div class="row mt-3">
       <div class="col-10 offset-1">
         {% for comen in obj.comentarios%}
@@ -119,25 +132,19 @@
     let form_comentario = document.querySelector('#form_' + id)
     form_comentario.removeAttribute('hidden', false)
   }
-  function mostrar(opcion){
-    let subirImagen = document.querySelector('.subir_imagen')
-    let publicar = document.getElementById('btnPublicar')
-    let subirPublicacion = document.querySelector('.form-floating')
-    
-    if(opcion==1){       
-       subirImagen.removeAttribute('hidden',false)
-       publicar.removeAttribute('hidden',false)
+  function mostrar(opcion) {
+    let subirImagen = document.querySelector('.divImg')
+    let subirPublicacion = document.querySelector('.divPost')
 
-       subirPublicacion.setAttribute('hidden',true)
+    if (opcion == 1) {
+      subirImagen.removeAttribute('hidden', false)
+      subirPublicacion.setAttribute('hidden', true)
     }
-    else{         
-       subirPublicacion.removeAttribute('hidden',false)
-       publicar.removeAttribute('hidden',false)
-
-       subirImagen.setAttribute('hidden',true)
+    else {
+      subirPublicacion.removeAttribute('hidden', false)
+      subirImagen.setAttribute('hidden', true)
     }
   }
-
 
   async function add_like(ev, id) {
     ev.preventDefault()
@@ -146,8 +153,17 @@
     let num_likes = parseInt(span_mensaje.innerHTML)
     num_likes++;
     span_mensaje.innerHTML = num_likes
-
   }
+
+  // const validar = document.getElementById('floatingTextarea')
+
+  // validar.addEventListener("blur",()=>{
+  //   const contenido= (validar.value).trim()
+  //   if(contenido== ''){
+  //   alert('campo vacio')
+  //   return
+  //   }
+  // })
 
 
   //document.querySelectorAll('button.activar').map(button => button.addEventListener('click', activarFormulario))
